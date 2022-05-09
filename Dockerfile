@@ -1,4 +1,4 @@
-FROM golang:1.16-alpine as build
+FROM golang:1.18 as build
 
 WORKDIR /build
 COPY go.mod ./
@@ -6,13 +6,9 @@ COPY go.sum ./
 RUN go mod download
 
 COPY . ./
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -o app
+RUN go build -a -o app
 
-FROM alpine:latest as certs
-RUN apk --update add ca-certificates
-
-FROM scratch
+FROM ubuntu:20.04
 COPY --from=build /build /
-COPY --from=certs /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
-EXPOSE 8080
+EXPOSE 9717
 ENTRYPOINT [ "/app" ]
