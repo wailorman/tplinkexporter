@@ -1,5 +1,7 @@
 # TPLink EasySmart Switch Exporter
 
+### Forked from [thelastguardian/tplinkexporter](https://github.com/thelastguardian/tplinkexporter)
+
 Exports port stats from TPLink's EasySmart Switches. Very alpha, basic functionality so far:
 - Port Stats
 
@@ -18,15 +20,21 @@ Basic Grafana dashboard using the exporter - https://grafana.com/grafana/dashboa
 
 ## Usage
 
+```shell
 go run main.go --host <IP/host of switch> --username <WEBGUI username> --password <WEBGUI password>
+```
 
 Default username and password for this switch is admin and admin, so:
 
+```shell
 go run main.go --host 10.0.0.3 --username admin --password admin
+```
 
 ## Run with docker:
 
-docker run -it -p 9717:9717 thelastguardian/tplinkexporter --host 10.0.0.3 --username admin --password admin
+```shell
+docker run -it -p 9717:9717 wailorman/tplinkexporter --host 10.0.0.3 --username admin --password admin
+```
 
 ## Metrics Exported on :9717/metrics
 

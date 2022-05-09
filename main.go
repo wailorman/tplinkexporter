@@ -8,8 +8,8 @@ import (
 	"github.com/prometheus/common/log"
 	"gopkg.in/alecthomas/kingpin.v2"
 
-	"github.com/thelastguardian/tplinkexporter/clients"
-	"github.com/thelastguardian/tplinkexporter/collectors"
+	"github.com/wailorman/tplinkexporter/clients"
+	"github.com/wailorman/tplinkexporter/collectors"
 )
 
 func main() {

@@ -1,4 +1,4 @@
-module github.com/thelastguardian/tplinkexporter
+module github.com/wailorman/tplinkexporter
 
 go 1.14
 

@@ -8,7 +8,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/common/log"
 
-	"github.com/thelastguardian/tplinkexporter/clients"
+	"github.com/wailorman/tplinkexporter/clients"
 )
 
 type TrafficCollector struct {
