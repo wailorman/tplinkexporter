@@ -2,11 +2,11 @@ package collectors
 
 import (
 	"fmt"
+	"log"
 	"strconv"
 	"strings"
 
 	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/common/log"
 
 	"github.com/wailorman/tplinkexporter/clients"
 )
@@ -46,7 +46,7 @@ func NewTrafficCollector(namespace string, client clients.TPLINKSwitchClient) *T
 				Name:      strings.ToLower(name),
 				Help:      fmt.Sprintf("Value of the '%s' traffic metric from the router", name),
 			},
-			[]string{"portnum", "host"},
+			[]string{"portnum", "host", "hostname", "portname"},
 		)
 	}
 	statusMetrics := make(map[string]*prometheus.GaugeVec)
@@ -58,7 +58,7 @@ func NewTrafficCollector(namespace string, client clients.TPLINKSwitchClient) *T
 				Name:      strings.ToLower(name),
 				Help:      fmt.Sprintf("Value of the '%s' traffic metric from the router", name),
 			},
-			[]string{"portnum", "host"},
+			[]string{"portnum", "host", "hostname", "portname"},
 		)
 	}
 	return &TrafficCollector{
@@ -80,17 +80,40 @@ func (c *TrafficCollector) Collect(ch chan<- prometheus.Metric) {
 
 	stats, err := c.client.GetPortStats()
 	if err != nil {
-		log.Errorf("Error while collecting traffic statistics: %v", err)
+		log.Printf("Error while collecting traffic statistics: %v", err)
 		// c.trafficScrapeErrorsTotalMetric.Inc()
 	} else {
 		for portnum := 0; portnum < len(stats); portnum++ {
 			for name, value := range stats[portnum].PktCount {
 				// log.Infof("portnum '%d', metricname '%s', metricvalue '%d'", portnum, name, value)
-				c.pktMetrics[name].With(prometheus.Labels{"portnum": strconv.FormatInt(int64(portnum+1), 10), "host": c.client.GetHost()}).Set(float64(value))
+				c.pktMetrics[name].
+					With(prometheus.Labels{
+						"portnum":  strconv.FormatInt(int64(portnum+1), 10),
+						"host":     c.client.GetHost(),
+						"hostname": c.client.GetHostName(),
+						"portname": c.client.GetPortName(portnum),
+					}).
+					Set(float64(value))
 			}
 			// log.Infof("portnum '%d', state '%d', linkstatus '%d'", portnum, stats[portnum].State, stats[portnum].LinkStatus)
-			c.statusMetrics["State"].With(prometheus.Labels{"portnum": strconv.FormatInt(int64(portnum+1), 10), "host": c.client.GetHost()}).Set(float64(stats[portnum].State))
-			c.statusMetrics["LinkStatus"].With(prometheus.Labels{"portnum": strconv.FormatInt(int64(portnum+1), 10), "host": c.client.GetHost()}).Set(float64(stats[portnum].LinkStatus))
+
+			c.statusMetrics["State"].
+				With(prometheus.Labels{
+					"portnum":  strconv.FormatInt(int64(portnum+1), 10),
+					"host":     c.client.GetHost(),
+					"hostname": c.client.GetHostName(),
+					"portname": c.client.GetPortName(portnum),
+				}).
+				Set(float64(stats[portnum].State))
+
+			c.statusMetrics["LinkStatus"].
+				With(prometheus.Labels{
+					"portnum":  strconv.FormatInt(int64(portnum+1), 10),
+					"host":     c.client.GetHost(),
+					"hostname": c.client.GetHostName(),
+					"portname": c.client.GetPortName(portnum),
+				}).
+				Set(float64(stats[portnum].LinkStatus))
 		}
 		for name := range c.pktMetrics {
 			c.pktMetrics[name].Collect(ch)

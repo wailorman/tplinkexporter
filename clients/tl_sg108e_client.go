@@ -8,19 +8,24 @@ import (
 	"net/http"
 	"net/url"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
 type TPLINKSwitchClient interface {
 	GetPortStats() ([]portStats, error)
 	GetHost() string
+	GetHostName() string
+	GetPortName(port int) string
 	// Login()
 }
 
 type TPLINKSwitch struct {
-	host     string
-	username string
-	password string
+	host      string
+	hostname  string
+	username  string
+	password  string
+	portnames map[int]string
 }
 
 type portStats struct {
@@ -109,10 +114,28 @@ var tip = "";
 </script>
 */
 
-func NewTPLinkSwitch(host string, username string, password string) *TPLINKSwitch {
+func (client *TPLINKSwitch) GetHostName() string {
+	if client.hostname != "" {
+		return client.hostname
+	}
+
+	return client.host
+}
+
+func (client *TPLINKSwitch) GetPortName(port int) string {
+	if name, ok := client.portnames[port]; ok {
+		return name
+	}
+
+	return strconv.Itoa(port)
+}
+
+func NewTPLinkSwitch(host, hostname, username, password string, portnames map[int]string) *TPLINKSwitch {
 	return &TPLINKSwitch{
-		host:     host,
-		username: username,
-		password: password,
+		host:      host,
+		hostname:  hostname,
+		username:  username,
+		password:  password,
+		portnames: portnames,
 	}
 }
