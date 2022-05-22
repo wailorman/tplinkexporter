@@ -40,7 +40,7 @@ func main() {
 	}
 
 	tplinkSwitch := clients.NewTPLinkSwitch(*host, *hostname, *username, *password, portNamesMap)
-	trafficCollector := collectors.NewTrafficCollector("tplink_exporter", tplinkSwitch)
+	trafficCollector := collectors.NewTrafficCollector("tp_link_exporter", tplinkSwitch)
 	prometheus.MustRegister(trafficCollector)
 	http.Handle("/metrics", promhttp.Handler())
 	log.Println("Beginning to serve on port :9717")
