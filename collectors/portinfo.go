@@ -113,7 +113,7 @@ func (c *TrafficCollector) Collect(ch chan<- prometheus.Metric) {
 					"hostname": c.client.GetHostName(),
 					"portname": c.client.GetPortName(portnum + 1),
 				}).
-				Set(float64(stats[portnum].LinkStatus))
+				Set(getPortStatus(stats[portnum].LinkStatus))
 		}
 		for name := range c.pktMetrics {
 			c.pktMetrics[name].Collect(ch)
@@ -151,4 +151,17 @@ func (c *TrafficCollector) Describe(ch chan<- *prometheus.Desc) {
 	// c.lastTrafficScrapeErrorMetric.Describe(ch)
 	// c.lastTrafficScrapeTimestampMetric.Describe(ch)
 	// c.lastTrafficScrapeDurationSecondsMetric.Describe(ch)
+}
+
+func getPortStatus(status int) float64 {
+	switch status {
+	case 4:
+		return 100
+	case 5:
+		return 100
+	case 6:
+		return 1000
+	default:
+		return 0
+	}
 }
