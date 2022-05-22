@@ -91,7 +91,7 @@ func (c *TrafficCollector) Collect(ch chan<- prometheus.Metric) {
 						"portnum":  strconv.FormatInt(int64(portnum+1), 10),
 						"host":     c.client.GetHost(),
 						"hostname": c.client.GetHostName(),
-						"portname": c.client.GetPortName(portnum),
+						"portname": c.client.GetPortName(portnum + 1),
 					}).
 					Set(float64(value))
 			}
@@ -102,7 +102,7 @@ func (c *TrafficCollector) Collect(ch chan<- prometheus.Metric) {
 					"portnum":  strconv.FormatInt(int64(portnum+1), 10),
 					"host":     c.client.GetHost(),
 					"hostname": c.client.GetHostName(),
-					"portname": c.client.GetPortName(portnum),
+					"portname": c.client.GetPortName(portnum + 1),
 				}).
 				Set(float64(stats[portnum].State))
 
@@ -111,7 +111,7 @@ func (c *TrafficCollector) Collect(ch chan<- prometheus.Metric) {
 					"portnum":  strconv.FormatInt(int64(portnum+1), 10),
 					"host":     c.client.GetHost(),
 					"hostname": c.client.GetHostName(),
-					"portname": c.client.GetPortName(portnum),
+					"portname": c.client.GetPortName(portnum + 1),
 				}).
 				Set(float64(stats[portnum].LinkStatus))
 		}
